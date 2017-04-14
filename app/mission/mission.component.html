@@ -1,0 +1,168 @@
+<my-header>
+</my-header>
+<my-nav></my-nav>
+
+<div id="page-wrapper">
+
+    <div class="col-lg-12">
+        <h5 class="page-header-no"></h5>
+    </div>
+
+    <div class="row">
+        <!-- 配方列表 -->
+        <div class="col-md-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i [class.hide]="loading" class="fa fa-missions fa-fw"></i>
+                    <i [class.hide]="!loading" class="fa fa-refresh fa-spin fa-fw"></i> {{ 'select formula' | translate }}
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body" style="padding: 0px; height: 77vh; overflow-y: scroll;">
+                    <ul class="list-group">
+                        <li class="list-group-item" *ngFor="let node of formulas">{{node.Title}}
+                            <button class="btn btn-xs btn-primary pull-right" (click)='addMission(node)'><i class="fa fa-plus"></i></button>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+        <!-- end of 配方列表 -->
+        <div class="col-md-10" style="padding-left: 0px">
+            <div class="panel panel-default">
+
+                <!-- 任务标签页 -->
+                <div class="panel-heading" style="padding:0px; border-bottom: none;">
+                    <ul class="nav nav-tabs tasks" role="tablist">
+                        <li [hidden]="missions.length" [class.hide]="missions.length" role="presentation" class="active"><a href="#home" role="tab" data-toggle="tab">{{ 'no_mission_available' | translate }}</a></li>
+                        <!--<li role="presentation" class="active"><a href="#home" role="tab" data-toggle="tab">Home</a></li>-->
+                        <li role="presentation" *ngFor="let task of missions;let $idx = index" [class.active]="$idx == 0" (click)="search.Key= 'MissionID';search.Value = task.ID;">
+                            <a href="#{{ 'tab' + $idx }}" role="tab" data-toggle="tab" ng-class="{true:'active', false:''}[$idx == 0]">{{ task.Title }}-{{ 'mission' | translate}}<span class="badge" [ngClass]="{ 'badge-info': task.Status == 1, 'badge-success': task.Status == 2 }">{{ task.StatusTitle | translate }}</span> 
+                            <button (click)="deleteMission(task)" class="btn btn-danger btn-xs" title="{{ 'cancel mission' | translate }}">x</button></a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- end of 任务标签页 -->
+
+                <div class="panel-body" style="padding: 0px; height: 75vh; overflow-y: scroll; ">
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <!--<div role="tabpanel" class="tab-pane fade active" id="home">...</div>-->
+                        <div role="tabpanel" class="tab-pane" [class.active]="$idx == 0" id="{{ 'tab' + $idx }}" *ngFor="let task of missions; let $idx = index">
+
+                            <div class="col-md-12 text-center">
+                                <hr />
+                            </div>
+                            <div class="col-md-12" style="padding: 0px;">
+                                <div class="col-md-3" style="padding: 0px 5px;">
+                                    <ul class="list-group list-group-sm">
+                                        <li class="list-group-item list-group-sm" [class.active]="task.$.selected &&  detail.RecipeID == task.$.selected['RecipeID']" *ngFor="let detail of task.MissionDetails" (click)="selectRecipe(task, detail)">
+                                            <span>{{ detail.MaterialTitle }}</span>
+                                            <span class="badge" [ngClass]="{ 'badge-info': detail.Status == 1, 'badge-success': detail.Status == 2 }">{{ detail.StatusTitle | translate }} <i [class.hide]="!detail._loading" class="fa fa-refresh fa-spin"></i></span>
+                                            <span style="padding-left: 8px; padding-right: 8px;">{{ detail.Weight }}/{{ detail.StandardWeight }}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-9" style="padding-left: 0px;">
+
+                                    <div class="col-md-12">
+                                        <div class="col-md-4">
+                                            <button class="btn btn-primary btn-sm" [disabled]="task.Status == 8" (click)="dispatch(task)">{{ 'dispatch' | translate }}</button>
+                                            <button class="btn btn-primary btn-sm" (click)="refresh()">{{ 'refresh' | translate }}</button>
+                                        </div>
+                                        <div class="col-md-8 text-right">
+                                            <div class="btn-group btn-group-xs">
+                                                <button type="button" class="btn" [ngClass]="{ 'btn-primary': search.Value === task.ID }" (click)="search.Key= 'MissionID';search.Value = task.ID;">{{ 'current task' | translate }} <span>{{ (scales|grep:'MissionID':task.ID).length }}</span> </button>
+                                                <button type="button" class="btn" [ngClass]="{ 'btn-primary': search.Value == 1 }" (click)="search.Key='Status';search.Value = 1;">{{ 'idle' | translate }} <span>{{ (scales | grep:'Status':1).length }}</span></button>
+                                                <button type="button" class="btn" [ngClass]="{ 'btn-primary': search.Value == 2 }" (click)="search.Key='Status';search.Value = 2;">{{ 'weighing' | translate }} <span>{{ (scales | grep:'Status':2).length }}</span></button>
+                                                <button type="button" class="btn" [ngClass]="{ 'btn-primary': search.Value == 4 }" (click)="search.Key='Status';search.Value = 4;">{{ 'pause' | translate }} <span>{{ (scales | grep:'Status':4).length }}</span></button>
+                                                <button type="button" class="btn" [ngClass]="{ 'btn-primary': search.Value == 8 }" (click)="search.Key='Status';search.Value = 8;">{{ 'cancel' | translate }} <span>{{ (scales | grep:'Status':8).length }}</span></button>
+                                                <button type="button" class="btn" [ngClass]="{ 'btn-primary': search.Value === 0 }" (click)="search.Key='Status';search.Value = 0;">{{ 'offline' | translate }}  <span>{{ (scales | grep:'Status':0).length }}</span></button>
+                                                <button type="button" class="btn" [ngClass]="{ 'btn-primary': search.Value === null }" (click)="search.Key='Status';search.Value = null;">{{ 'all' | translate }} <span>{{ scales.length }}</span> </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" style="height: 62vh ; overflow-y: auto;">
+                                        <div *ngFor="let scale of scales | grep:search.Key:search.Value:true;let $index = index;">
+
+                                            <div class="col-md-12 scale" [ngClass]="{ 'scale-default': scale.Status == 0,  'scale-success': scale.Status == 1, 'scale-warning': scale.Status == 2}" [class.disabled]="scale.Status != 1 || !task.$.selected || !(!scale.RecipeID || (scale.RecipeID == task.$.selected.RecipeID && scale.MissionID == task.$.selected.MissionID))"
+                                                [class.active]="scale.MissionID == task.ID && task.$.selected && scale.RecipeID == task.$.selected['RecipeID']">
+
+                                                <div class="zero-clipboard" style="position: relative"><span class="btn-clipboard">#{{ $index + 1 }}</span></div>
+
+                                                <div class="col-md-5 scale-selector" (click)="selectScale(task, scale)">
+                                                    <h4>{{ scale.Title }}</h4>
+                                                    <span class="label" [ngClass]="{ 'label-default': scale.Status == 0,  'label-success': scale.Status == 1, 'label-warning': scale.Status == 2, 'label-info': scale.Status == 4, 'label-danger': scale.Status == 8}">{{ scale.StatusTitle | translate }}</span>
+                                                    <span class="label label-default" title="{{ 'capacity' | translate }}(kg)">Cap: {{ scale.MaxRange }}</span>
+                                                    <span class="label label-default" title="{{ 'precision' | translate }}">Res: {{ scale.Precision }}</span>
+                                                    <span class="label label-default" title="{{ 'capacity percentage' | translate }}">Cap Per: {{ scale.Percent }}%</span>
+
+                                                </div>
+                                                <div class="col-md-6" [class.hide]="scale.Status == 0 || !scale.MaterialTitle" style="border-left: 2px dotted #5bc0de;">
+                                                    <label style="color: #000;">{{ scale.MaterialTitle }}</label>
+                                                    <div class="input-group input-group-xs">
+                                                        <span class="input-group-addon">{{ 'weight' | translate}}</span>
+                                                        <input type="number" class="form-control" step="0.0001" [(ngModel)]="scale.Weight" [disabled]="scale.Status != 1">
+                                                        <span class="input-group-addon">KG</span>
+                                                    </div>
+                                                    <div class="col-md-12" style="padding-top: 5px;">
+                                                        <a [class.hide]="scale.Status != 2 && scale.Status != 16" class="btn btn-danger btn-xs" title="{{ 'cancel' | translate }}" (click)="action(scale, 'stop')"><i class="fa fa-stop"></i></a>
+                                                        <a [class.hide]="scale.Status != 2 && scale.Status != 16" class="btn btn-warning btn-xs" title="{{ 'pause' | translate }}" (click)="action(scale, 'pause')"><i class="fa fa-pause"></i></a>
+                                                        <a [class.hide]="scale.Status != 4" class="btn btn-success btn-xs" title="{{ 'play' | translate }}" (click)="action(scale, 'play')"><i class="fa fa-play"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--<ul class="list-group list-group-sm">
+                                        <li class="list-group-item" [class.active]="scale.MissionID == task.ID && task.$.selected && scale.RecipeID == task.$.selected['RecipeID']" *ngFor="let scale of scales" (click)="selectScale(task, scale)" [class.disabled]="scale.Status != 1 || !task.$.selected || !(!scale.RecipeID || (scale.RecipeID == task.$.selected.RecipeID && scale.MissionID == task.$.selected.MissionID))">
+                                            {{ scale.Title }} - {{ scale.MaterialTitle }}
+                                            <span class="badge" [class.badgeSuccess]="scale.Status == 1" [class.badge-warning]="scale.Stauts == 2" [class.badge-default]="scale.Status == 0">
+                                                {{ scale.StatusTitle | translate }}
+                                            </span>
+                                        </li>
+                                    </ul>-->
+
+                                    <!--<table id="table-dispatch" class="table table-striped table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 50px;">{{ 'selected' | translate }}</th>
+                                                <th>{{ 'scale' | translate }}</th>
+                                                <th>{{ 'max_range' | translate }}(kg)</th>
+                                                <th>{{ 'material title' | translate }}</th>
+                                                <th>{{ 'weight' | translate }}</th>
+                                                <th>{{ 'status' | translate }}</th>
+                                                <th>{{ 'operation' | translate }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let scale of scales" [class.disabled]="scale.Status != 1 || !task.$.selected || !(!scale.RecipeID || (scale.RecipeID == task.$.selected.RecipeID && scale.MissionID == task.$.selected.MissionID))" [class.active]="scale.MissionID == task.ID && task.$.selected && scale.RecipeID == task.$.selected['RecipeID']">
+                                                <td><input type="checkbox" [checked]="task.$.selected && scale.MissionDetailID == task.$.selected.ID &&  scale.RecipeID == task.$.selected['RecipeID']" (click)="selectScale(task, scale)"></td>
+                                                <td>{{ scale.Title }}</td>
+                                                <td>{{ scale.MaxRange }}</td>
+                                                <td>{{ scale.MaterialTitle }}</td>
+                                                <td><input type="number" [(ngModel)]="scale.Weight" [disabled]="scale.Status != 1"></td>
+                                                <td>{{ scale.StatusTitle | translate }}</td>
+                                                <td>
+                                                    <a [class.hide]="scale.Status != 2 && scale.Status != 16" class="btn btn-danger btn-xs" title="{{ 'cancel' | translate }}" (click)="action(scale, 'stop')"><i class="fa fa-stop"></i></a>
+                                                    <a [class.hide]="scale.Status != 2 && scale.Status != 16" class="btn btn-warning btn-xs" title="{{ 'pause' | translate }}" (click)="action(scale, 'pause')"><i class="fa fa-pause"></i></a>
+                                                    <a [class.hide]="scale.Status != 4" class="btn btn-success btn-xs" title="{{ 'play' | translate }}" (click)="action(scale, 'play')"><i class="fa fa-play"></i></a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>-->
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="panel-footer">
+                    <div></div>
+
+                </div>-->
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+
+<head>
+    <base href="/" />
+    <title>Xmeta - Formula Management System</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <!--<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />-->
+    <link rel="stylesheet" href="assets/sb-admin-v2/css/bootstrap.css" />
+    <link rel="stylesheet" href="assets/sb-admin-v2/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="assets/sb-admin-v2/css/sb-admin.css" />
+    <!-- 1. Load libraries -->
+    <!-- Polyfill(s) for older browsers -->
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/reflect-metadata/Reflect.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
+
+    <!--<script src="app/directives/oms.router.outlet.js"></script>-->
+    <script src="node_modules/lodash/lodash.js"></script>
+    <!-- 2. Load our 'modules' -->
+    <!-- basic -->
+    <script src='assets/json/languages.js'></script>
+    <script src='assets/json/categories.js'></script>
+    <script src='assets/json/messages.js'></script>
+    <script src='assets/FileSaver/FileSaver.min.js'></script>
+    <script src='assets/download.js'></script>
+
+    <script src="systemjs.config.js"></script>
+    <script>
+        System.import('app').catch(function(err) {
+            console.error(err);
+        });
+    </script>
+</head>
+
+<!-- 3. Display the application -->
+
+<body>
+    <div id="wrapper">
+        <!--<my-content><my-app>loading...</my-app></my-content>-->
+        <!--<my-auth></my-auth>-->
+        <my-app></my-app>
+        <!--<my-app></my-app>-->
+        <!--<my-app></my-app>-->
+        <!-- /#page-wrapper -->
+        <!--<router-outlet></router-outlet>-->
+
+    </div>
+</body>
+<script src="node_modules/jquery/dist/jquery.min.js"></script>
+<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<!--<script src="assets/sb-admin-v2/js/plugins/metisMenu/jquery.metisMenu.js"></script>-->
+<script src="assets/sb-admin-v2/js/plugins/morris/morris.js"></script>
+<script src="assets/sb-admin-v2/js/plugins/morris/raphael-2.1.0.min.js"></script>
+<script src="assets/sb-admin-v2/js/sb-admin.js"></script>
+
+</html>

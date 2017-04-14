@@ -1,0 +1,451 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '3.0'
+info:
+  title: Xmeta fms API
+  description: FMS Service API
+  version: "1.0.0"
+# the domain of the service
+host: productsvc.oms-x.com
+# array of all schemes that your API supports
+schemes:
+  - https
+# will be prefixed to all paths
+basePath: /api
+produces:
+  - application/json
+paths:
+  /missions:
+    get:
+      summary: 任务列表
+      description: |
+        获取所有的任务清单
+      tags: 
+        - Missions
+      responses:
+        200:
+          description: 任务列表
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Mission'
+  /scales:
+    get:
+      summary: 获取台秤列表
+      description: |
+        获取所有的台秤列表
+      tags:
+        - Scales
+      responses:
+        200:
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Scale'
+    post:
+      summary: 注册台秤
+      description: |
+        如果此台秤从未注册，则需要进行注册填写相关的台秤信息
+      parameters:
+        - name: Device
+          in: body
+          description: 设备标识
+          required: true
+          type: string
+        - name: Title
+          in: body
+          description: 台秤名称
+          required: true
+          type: string
+        - name: MaxRange
+          in: body
+          description: 最大量程
+          required: true
+          type: number
+          format: double
+        - name: Precision
+          in: body
+          description: 精度
+          required: true
+          type: integer
+          format: int32
+        - name: Team
+          in: body
+          description: 所属团队
+          required: true
+          type: string
+          default: ''
+        - name: IPAddress
+          in: body
+          description: IP地址
+          required: true
+          type: string
+          default: ''
+        - name: Percent
+          in: body
+          description: 秤量程百分比
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - Scales
+      responses:
+        200:
+          schema:
+            type: object
+            # items: 
+            $ref: '#/definitions/Scale'
+
+  /scales/{id}/tasks:
+    get:
+      summary: 获取某台秤的派工列表
+      description:
+      parameters:
+        - name: id
+          in: path
+          description: 台秤的ID
+          required: true
+          type: uuid
+          format:
+      tags:
+        - Scales
+      responses:
+        200:
+          description: 台秤明细列表
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Scale'
+    post:
+      summary: 称重反馈数据
+      description: |
+        台秤派工任务完成后，返回的数值通过此接口进行反馈
+      tags:
+        - Scales
+      parameters:
+        - name: id
+          in: path
+          description: 台秤ID
+          required: true
+          type: uuid
+        - name: Device
+          in: body
+          description: 设备标识
+          required: true
+          type: string
+        - name: Title
+          in: body
+          description: 台秤名称
+          required: true
+          type: string
+        - name: MaxRange
+          in: body
+          description: 最大量程
+          required: true
+          type: number
+          format: double
+        - name: Precision
+          in: body
+          description: 精度
+          required: true
+          type: integer
+          format: int32
+        - name: Team
+          in: body
+          description: 所属团队
+          required: true
+          type: string
+          default: ''
+        - name: IPAddress
+          in: body
+          description: IP地址
+          required: true
+          type: string
+          default: ''
+        - name: Percent
+          in: body
+          description: 秤量程百分比
+          required: true
+          type: integer
+          format: int32
+        - name: MissionID
+          description: 派工单ID
+          in: body
+          required: true
+          type: uuid
+        - name: MissionDetailID
+          description: 派工明细ID
+          in: body
+          required: true
+          type: uuid
+        - name: Salt
+          description: 当前派工的salt，以区分于同一配方的同一明细的任务
+          in: body
+          required: true
+          type: uuid
+        - name: Weight
+          description: 此次称的数量
+          in: body
+          required: true
+          type: number
+          format: double
+        - name: DeviationWeight
+          description: 此次称的误差限定量
+          in: body
+          required: true
+          type: number
+          format: double
+      responses:
+        200:
+          description: 台秤明细
+          schema:
+            $ref: '#/definitions/Scale'
+        400:
+          description: |
+            error_machine_identifier: 设备ID出错
+            not_in_weight_or_donot_weight_anything: 未称重，或者无称重数值
+        404:
+          description: 未找到相应的台秤信息
+definitions:
+  Pagination:
+    type: object
+    title: 分页
+    properties:
+      Index:
+        type: integer
+        format: int32
+        default: 1
+        description: 页码
+      Size:
+        type: integer
+        format: int32
+        default: 50
+        description: 每页条数
+      Count:
+        type: integer
+        format: int32
+        default: 0
+        description: 总页数
+      All:
+        type: integer
+        format: int32
+        default: 0
+        description: 总条数
+      NoPaging:
+        type: boolean
+        default: true
+        description: 是否分页, 默认不分页
+      Sort:
+        type: string
+        format: json
+        description: 排序字段列表
+      Grep:
+        type: object
+        description: 过滤查询条件
+  Mission:
+    type: object
+    title: 任务
+    properties:
+      ID:
+        type: uuid
+        description: ID
+      Title:
+        type: string 
+        description: 任务标题
+      FormularID:
+        type: uuid
+        description: 配方ID
+      FormularTitle:
+        type: string
+        description: 配方名称
+      IsTeamwork:
+        type: boolean
+        description: 是否限定协同工作
+      TeamID:
+        type: string
+        description: Team标识符
+      IsAutomatic:
+        type: boolean
+        description: 是否自动化分配任务
+      CreateDate: 
+        type: string
+        format: date-time
+        description: 创建日期
+      Status:
+        type: integer
+        format: int32
+        description: |
+          任务状态 
+          0: 未分配 
+          1: 进行中 
+          2: 已完成
+      StatusTitle:
+        type: string
+        description: |
+          状态说明
+          0: unassigned
+          1: working
+          2: accomplished
+      Formular:
+        type: object
+        description: 配方
+        schema:
+          $ref: '#/definitions/Formular'
+      MissionDetails:
+        type: array
+        description: 任务相关的明细列表
+        items:
+          $ref: '#/definitions/MissionDetail'
+  MissionDetail:
+    type: object
+    title: 任务明细
+    properties:
+      ID:
+        type: uuid
+        description: 任务明细ID
+      Title:
+        type: string
+        description: 配料标题
+      MissionID:
+        type: uuid
+        description: 所属任务的ID
+      RecipeID:
+        type: uuid
+        description: 对应的配方明细ID
+      MaterialID:
+        type: uuid
+        description: 对应的物料ID
+      MaterialTitle:
+        type: string
+        description: 对应的物料标题
+      Weight:
+        type: number
+        description: 本配方明细已称的物料重量
+      StandardWeight:
+        type: number
+        description: 本配方明细的标准重量
+      CreateDate:
+        type: string
+        format: date-time
+        description: 本任务明细的创建日期或最新称重日期
+      Deviation:
+        type: number
+        description: 本物料允许的误差量 |
+          如果IsRatio值为true，则本值表示误差百分比
+          如果IsRatio值为false，则本值表示误差值
+      DeviationWeight:
+        type: number
+        description: 误差值
+      IsRatio:
+        type: bool
+        description: Deviation保存的是否是百分比
+      Status:
+        type: integer
+        format: int32
+        description: |
+          任务明细状态 
+          0: 未开始
+          1: 称重中
+          2: 已完成
+      StatusTitle:
+        type: string
+        description: |
+          状态说明
+          0: ready
+          1: weighing
+          2: accomplished
+      Mission:
+        type: object
+        description: 所属的任务
+      Recipe:
+        type: object
+        description: 任务对应的配方明细
+      Scales:
+        type: array
+        description: 分配的台秤列表
+        items:
+          $ref: '#/definitions/Scale'
+  Scale:
+    type: object
+    title: 台秤
+    properties:
+      ID:
+        type: uuid
+        description: ID
+      Title:
+        type: string
+        description: 秤
+      Device:
+        type: string
+        description:
+      MaxRange: 
+        type: number
+        description:
+      Weight:
+        type: number
+        format: ~
+        description:
+      DeviationWeight:
+        type: number
+        description: 误差值
+      Salt:
+        type: uuid
+        description: 同一配方明细同一台秤的区分标志
+      Precision:
+        type: integer
+        format: int32
+        description: 精度
+      Percent:
+        type: integer
+        format: int32
+        description: 百分比
+      MissionID:
+        type: uuid
+        foramat: ~
+        description: 任务ID
+      MissionDetailID:
+        type: uuid
+        format: ~
+        description: 任务明细ID
+      MaterialTitle:
+        type: string
+        description: 派工的物料标题
+      RecipeID:
+        type: uuid
+        description: 派工的配方明细ID
+      Team:
+        type: string
+        description: 如果是团队任务，保存团队标志
+      LastHeartBeat:
+        type: string
+        format: date-time
+        description: 最后一次心跳包时间
+      IPAddress:
+        type: string
+        description: 台秤ip地址
+      Status:
+        type: integer
+        format: int32
+        description: |
+          任务状态 
+          0: 离线 
+          1: 空闲 
+          2: 工作中
+          4: 暂停任务
+          8: 取消
+      StatusTitle:
+        type: string
+        description: |
+          状态说明
+          0: offline
+          1: idle
+          2: working
+          4: pause
+          8: cancel
+      MissionDetail:
+        type: object
+        description: 台秤分配的任务明细
+        items:
+          $ref: '#/definitions/MissionDetail'
+      
+

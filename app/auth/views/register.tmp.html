@@ -1,0 +1,108 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="login-panel panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{ 'please register' | translate }}</h3>
+                </div>
+                <div [hidden]="!message" class="panel-body bg-danger">
+                    <span style="color: #FFFFFF;">*{{ message | translate }}</span>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" role="form" (submit)="register($event, user.value, email.value, phone.value,  password.value, confirmPassword.value, company.value, department.value, position.value, fullname.value)">
+                        <fieldset>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'user' | translate }}</label>
+
+                                <div class="col-md-9">
+                                    <input type="text" #user class="form-control" required autofocus placeholder="{{ 'user' | translate }}" (change)="check($event, user.value, 'user')">
+                                    <span [class.hide]="isUserOk < 0 || isUserOk != 1" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                                    <span [class.hide]="isUserOk < 0 || isUserOk != 2" class="glyphicon glyphicon-remove fa-fw form-control-feedback danger"></span>
+                                    <span [class.hide]="isUserOk > 0 || !user.value.length" class="glyphicon glyphicon-repeat fa-spin form-control-feedback"></span>
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'fullname' | translate }}</label>
+
+                                <div class="col-md-9">
+                                    <input type="text" #fullname class="form-control" placeholder="{{ 'fullname' | translate}}">
+                                    <span [class.hide]="true" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'email' | translate }}</label>
+
+                                <div class="col-md-9">
+                                    <input type="email" #email class="form-control" required autofocus placeholder="{{ 'email' | translate }}" (change)="check($event, email.value, 'email')">
+                                    <span [class.hide]="isEmailOk < 0 || isEmailOk != 1" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                                    <span [class.hide]="isEmailOk < 0 || isEmailOk != 2" class="glyphicon glyphicon-remove danger form-control-feedback"></span>
+                                    <span [class.hide]="isEmailOk > 0 || !email.value.length" class="glyphicon glyphicon-repeat fa-spin form-control-feedback"></span>
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'password' | translate}}</label>
+
+                                <div class="col-md-9">
+                                    <input type="password" #password class="form-control" required placeholder="{{ 'password' | translate}}">
+                                    <span [class.hide]="true" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'confirm password' | translate}}</label>
+
+                                <div class="col-md-9">
+                                    <input type="password" #confirmPassword class="form-control" required placeholder="{{ 'confirm password' | translate}}">
+                                    <span [class.hide]="true" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'phonenumber' | translate }}</label>
+
+                                <div class="col-md-9">
+                                    <input type="text" #phone class="form-control" required placeholder="{{ 'phonenumber' | translate}}" (change)="check($event, phone.value, 'phone')">
+                                    <span [class.hide]="isPhoneOk < 0 || isPhoneOk != 1" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                                    <span [class.hide]="isPhoneOk < 0 || isPhoneOk != 2" class="glyphicon glyphicon-remove danger form-control-feedback"></span>
+                                    <span [class.hide]="isPhoneOk > 0 || !phone.value.length" class="glyphicon glyphicon-repeat fa-spin form-control-feedback"></span>
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'company' | i18n }}</label>
+
+                                <div class="col-md-9">
+                                    <input type="text" #company class="form-control" placeholder="{{ 'company' | i18n }}">
+                                    <span [class.hide]="true" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'department' | i18n }}</label>
+
+                                <div class="col-md-9">
+                                    <input type="text" #department class="form-control" placeholder="{{ 'department' | i18n }}">
+                                    <span [class.hide]="true" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'position' | i18n }}</label>
+
+                                <div class="col-md-9">
+                                    <input type="text" #position class="form-control" placeholder="{{ 'position' | i18n }}">
+                                    <span [class.hide]="true" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="checkbox">
+                                <a [routerLink]="['/login']"> {{ 'have account' | translate }}?
+                                </a>
+                            </div>
+
+                            <!-- Change this to a button or input when using this as a form -->
+                            <button type="submit" class="btn btn-success btn-block">
+                                <i [class.hide]="!loading" class="fa fa-refresh fa-spin fa-fw"></i>{{ 'register' | translate }}
+                            </button>
+
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

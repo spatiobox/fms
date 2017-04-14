@@ -1,0 +1,116 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i [class.hide]="loading" class="fa fa-list fa-fw"></i>
+        <i [class.hide]="!loading" class="fa fa-refresh fa-spin fa-fw"></i> {{ 'recipe' | translate }}
+        <div class="pull-right" [hidden]="!isAdmin">
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline btn-warning btn-xs dropdown-toggle" data-toggle="dropdown">
+                    <i class="fa fa-cog"></i>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                    <!--<li><a href="javascript:void(0);" (click)="export($event, 'pdf')">{{ 'export recipes' | translate }}(PDF)</a></li>
+                    <li><a href="javascript:void(0);" (click)="export($event, 'xls')">{{ 'export recipes' | translate }}(EXCEL)</a></li>
+                    <li class="divider"></li>-->
+                    <li><a href="javascript:void(0);" (click)="download($event)">{{ 'download template' | translate }}</a></li>
+                    <li><a href="javascript:void(0);" (click)="import($event)">{{ 'import recipes' | translate }}</a></li>
+                    <li class="divider"></li>
+                    <li><a href="javascript:void(0);" (click)="deletes($event)">{{ 'delete choosen' | translate }}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="panel-heading">
+        <div class="input-group">
+            <input type="text" #rkey (keyup)="filter($event, rkey.value)" class="form-control input-sm" [placeholder]="'filter' | translate">
+            <span class="input-group-btn">
+                    <button class="btn btn-warning btn-sm" id="btn-chat" (click)="filter($event, rkey.value)"><i class="glyphicon glyphicon-search"></i>
+                    </button>
+                </span>
+        </div>
+
+    </div>
+    <!-- /.panel-heading -->
+    <div class="panel-body autoscroll" style="padding: 0px; max-height: 60vh; overflow-y: scroll;">
+        <table class="table table-condensed table-responsive">
+            <thead>
+                <tr>
+                    <th style="width: 25px;"></th>
+                    <th style="width: 200px;">{{ 'material name' | translate }}</th>
+                    <th>{{ 'std ratio' | translate }}</th>
+                    <th>{{ 'deviation' | translate }}</th>
+                    <th style="width: 60px;">{{ 'ispercentage' | translate }}</th>
+                    <th style="width: 65px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let node of models | filter: key; let i = index" (click)="select($event, node)" [class.active]="node.selected">
+                    <td>{{ node.Sort }}</td>
+                    <td>{{ node.MaterialTitle }}</td>
+                    <td [hidden]="node.status">{{ node.Weight | number:'.0-4' }}</td>
+                    <td [hidden]="!node.status">
+                        <input type="number" #weight class="col-md-12 text-editor" style="padding: 0px;" [(ngModel)]="node.weight" (change)="setClass($event, weight)" decimal="4" min="0" title="4 decimal places" step="0.0001" />
+                    </td>
+                    <td [hidden]="node.status">{{ node.Deviation | number:'.0-4' }}{{ node.IsRatio?'%':'' }}</td>
+                    <td [hidden]="!node.status">
+                        <input type="number" #deviation [(ngModel)]="node.deviation" class="col-md-10 text-editor" (change)="setClass($event, deviation)" style="padding: 0px;" decimal="4" min="0" title="4 decimal places" step="0.0001" />{{ node.isratio
+                        =="true"?'%':'' }}
+                    </td>
+                    <td [hidden]="node.status">
+                        <span [hidden]='!node.IsRatio'>{{ 'yes' | translate }}</span>
+                        <span [hidden]='node.IsRatio'> {{ 'no' | translate }}</span>
+                    </td>
+                    <td [hidden]="!node.status">
+                        <select [(ngModel)]="node.isratio">
+                        <option value="true">{{ 'yes' | translate }}</option>
+                        <option value="false">{{ 'no' | translate }}</option>
+                    </select>
+                    </td>
+                    <td>
+                        <button [class.hide]="node.status" class="btn btn-info btn-xs" (click)="edit($event, node)" title="{{ 'edit' | translate }}">
+                        <i class="glyphicon glyphicon-pencil"></i>
+                    </button>
+                        <button [class.hide]="!node.status" class="btn btn-info btn-xs" (click)="save($event, node)" [disabled]="!deviation.validity || !deviation.validity.valid || !weight.validity || !weight.validity.valid" title="{{ 'save' | translate }}">
+                        <i class="glyphicon glyphicon-floppy-disk"></i>
+                    </button>
+                        <button [class.hide]="!node.status" class="btn btn-danger btn-xs" (click)="cancel($event, node)" title="{{ 'cancel' | translate }}">
+                        <i class="glyphicon glyphicon-refresh"></i>
+                    </button>
+                        <button [class.hide]="node.status" class="btn btn-danger btn-xs" (click)="delete($event, node)" title="{{ 'delete' | translate }}">
+                        <i class="glyphicon glyphicon-trash"></i>
+                    </button>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2">{{ 'sum' | translate }}:</td>
+                    <td>{{ models | sum }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <!-- /.panel-body -->
+    <div class="panel-footer">
+        <button class="btn btn-warning btn-xs" (click)="resort($event)" title="{{ 'save sort' | translate }}">
+            <i class="fa fa-sort-numeric-asc"></i>
+        </button>
+        <button class="btn btn-primary btn-xs" (click)="resort($event, 1);" title="{{ 'sort up' | translate }}">
+            <i class="glyphicon glyphicon-arrow-down"></i>
+        </button>
+        <button class="btn btn-primary btn-xs" (click)="resort($event, -1)" title="{{ 'sort down' | translate }}">
+            <i class="glyphicon glyphicon-arrow-up"></i>
+        </button>
+    </div>
+</div>
+<div [class.hide]='!loading' aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal fade in" style="display: block; padding-left: 0px; background-color: #000; opacity: 0.8;">
+    <div role="document" class="modal-dialog">
+        <div class="modal-content">
+            <img src="/assets/images/loading.gif" style="width: 100%;" />
+        </div>
+        <!-- /.modal-content -->
+    </div>
+</div>

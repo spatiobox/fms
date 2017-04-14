@@ -1,0 +1,128 @@
+<my-header>
+</my-header>
+<my-nav></my-nav>
+
+<div id="page-wrapper">
+    <div class="row" style="padding-top: 15px;">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i [class.hide]="loading" class="fa fa-balance-scale fa-fw"></i>
+                    <i [class.hide]="!loading" class="fa fa-refresh fa-spin fa-fw"></i> {{ 'scale management' | translate }}
+                    <div class="pull-right hide">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline btn-warning btn-xs dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-cog"></i>
+                            <span class="caret"></span>
+                        </button>
+                            <ul class="dropdown-menu pull-right" role="menu">
+                                <li><a href="javascript:void(0);" (click)="export($event, 'pdf')">{{ 'export' | translate }}(PDF)</a></li>
+                                <li><a href="javascript:void(0);" (click)="export($event, 'xls')">{{ 'export' | translate }}(EXCEL)</a></li>
+                                <li class="divider"></li>
+                                <li [class.hide]="!isAdmin"><a href="javascript:void(0);" (click)="delete($event)">{{ 'delete choosen' | translate }}</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-heading">
+                    <div class="row hide">
+                        <!--<div class="col-md-2">
+                            <div class="form-group input-group input-group-sm">
+                                <span class="input-group-addon">{{ 'directory' | translate }}</span>
+                                <select #orgselector class="form-control" (change)="search($event, selector.value, start.value, end.value, hkey.value)" [(ngModel)]="organization">
+                                        <option value=""> —— </option>
+                                        <option *ngFor="let node of orgs; let i = index" value="{{ node.ID }}">{{ node.Title }}</option>
+                                    </select>
+                            </div>
+                        </div>-->
+                        <div class="col-md-2">
+                            <div class="form-group input-group input-group-sm">
+                                <span class="input-group-addon">{{ 'formular' | translate }}</span>
+                                <select #selector class="form-control" (change)="search($event, selector.value, start.value, end.value, hkey.value)" [(ngModel)]="formula">
+                                        <option value=""> —— </option>
+                                        <option *ngFor="let node of formulas| grep: 'OrgID': organization: true; let i = index" value="{{ node.ID }}">{{ node.Title }}&emsp;{{ isAdmin?('('+ (node.User.FullName || node.User.UserName) + ')'):'' }}</option>
+                                    </select>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group input-group input-group-sm">
+                                        <span class="input-group-addon">{{ 'entry date' | translate }}</span>
+                                        <input type="date" #start class="form-control" (change)="search($event, selector.value, start.value, end.value, hkey.value)" [(ngModel)]="startdate">
+                                        <!--<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group input-group input-group-sm">
+                                        <span class="input-group-addon">{{ '-' | translate }} </span>
+                                        <input type="date" #end class="form-control" (change)="search($event, selector.value, start.value, end.value, hkey.value)" [(ngModel)]="enddate">
+                                        <!--<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group input-group input-group-sm">
+                                <span class="input-group-addon">{{ 'keyword' | translate }}</span>
+                                <input type="text" #hkey name="Key" class="form-control input-sm" [placeholder]="'filter' | translate" [(ngModel)]="key">
+                                <!--<input type="text" #hkey name="Key" (keyup)="search($event, hkey.value)" class="form-control input-sm" [placeholder]="'filter' | translate">-->
+                                <!--<span class="input-group-btn">
+                                <a (click)="search($event, hkey.value)" class="btn btn-warning btn-sm" id="btn-chat" (click)="filter($event, hkey.value)"><i class="glyphicon glyphicon-search"></i></a>
+                            </span>-->
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <a id="btn-search" class="btn btn-warning btn-sm" (click)="search($event, selector.value, start.value, end.value, hkey.value)"><i class="glyphicon glyphicon-search"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body" style="padding: 0px; max-height: 70vh; overflow-y: scroll;">
+                    <table class="table table-condensed table-responsive">
+                        <thead>
+                            <tr>
+                                <th><input #ALL type="checkbox" (click)="toggle($event, ALL.checked)" value="true" /></th>
+                                <th>{{ 'item' | translate }}</th>
+                                <th>{{ 'device name' | translate }}</th>
+                                <th>{{ 'status' | translate }}</th>
+                                <th>{{ 'current task' | translate }}</th>
+                                <th>{{ 'heartbeat' | translate }}</th>
+                                <th>{{ 'operation' | translate }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let node of scales; let i = index">
+                                <td><input type="checkbox" [(ngModel)]="node.selected" /></td>
+                                <td>{{ i+1 }}</td>
+                                <td>{{ node.Device }}</td>
+                                <td><span class="label" [class.label-default]="node.Status == 0" [class.label-success]="node.Status == 1" [class.label-warning]="node.Status == 2" [class.label-info]="node.Status == 4" [class.label-danger]="node.Status == 8">{{ node.StatusTitle | translate }}</span></td>
+                                <td>{{ node.MaterialTitle}} / {{ node.Weight?(node.Weight + 'KG'):'' }}</td>
+                                <td>{{ node.LastHeartBeat }}</td>
+                                <td>
+                                    <a class="btn btn-primary btn-xs" (click)="mark(node, 'heartbeat')"><i class="fa fa-heartbeat"></i>{{ 'send heartbeat package' | translate }}</a>
+                                    <a class="btn btn-default btn-xs" (click)="mark(node, 'offline')"><i class="fa fa-unlink"></i>{{ 'markas offline' | translate }}</a>
+                                    <a class="btn btn-success btn-xs" (click)="mark(node, 'idle')"><i class="fa fa-hourglass-half"></i>{{ 'markas idle' | translate}}</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.panel-body -->
+                <div class="panel-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div [class.hide]='!loading' aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal fade in" style="display: block; padding-left: 0px; background-color: #000; opacity: 0.8;">
+    <div role="document" class="modal-dialog">
+        <div class="modal-content">
+            <img src="/assets/images/loading.gif" style="width: 100%;" />
+        </div>
+        <!-- /.modal-content -->
+    </div>
+</div>

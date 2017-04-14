@@ -1,0 +1,255 @@
+<my-header>
+</my-header>
+<my-nav></my-nav>
+
+<div id="page-wrapper">
+
+    <div class="col-lg-12">
+        <h5 class="page-header-no"></h5>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i [class.hide]="loading" class="fa fa-list fa-fw"></i>
+                    <i [class.hide]="!loading" class="fa fa-refresh fa-spin fa-fw"></i> {{ 'user management' | translate }}
+                    <div class="pull-right">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline btn-warning btn-xs dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-cog"></i>
+                            <span class="caret"></span>
+                        </button>
+                            <ul class="dropdown-menu pull-right" role="menu">
+                                <li><a href="#" (click)="export($event)">{{ 'export' | translate }}</a></li>
+                                <li class="divider"></li>
+                                <!--<li><a href="#" (click)="download($event)">{{ 'download template' | translate }}</a></li>-->
+                                <!--<li><a href="#" (click)="import($event)">{{ 'import recipes' | translate }}</a></li>-->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body" style="padding: 0px; max-height: 60vh; overflow-y: scroll;">
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs">
+                        <!--<li class="active"><a href="#home" data-toggle="tab">Home</a>-->
+                        <!--</li>-->
+                        <!--<li><a href="#profile" data-toggle="tab">Profile</a>-->
+                        <!--</li>-->
+                        <li class="active"><a href="#approving" data-toggle="tab">{{ 'pending_approval user' | translate }}</a> </li>
+                        <li><a href="#users" data-toggle="tab">{{ 'user_list' | translate }}</a></li>
+                        <li><a href="#formulas" data-toggle="tab">{{ 'formula copy' | translate }}</a></li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="approving">
+
+                            <table class="table table-condensed table-responsive">
+                                <thead>
+                                    <tr>
+                                        <th><input #AllApproving type="checkbox" (click)="toggle($event, AllApproving.checked, 0)" value="true" /></th>
+                                        <th>{{ 'item' | translate }}</th>
+                                        <th>{{ 'company name' | translate }}</th>
+                                        <th>{{ 'user name' | translate }}</th>
+                                        <th>{{ 'login account' | translate }}</th>
+                                        <th>{{ 'email' | translate }}</th>
+                                        <th>{{ 'phonenumber' | translate }}</th>
+                                        <th>{{ 'remark' | translate }}</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let node of models | grep:'Status': 0; let i = index" [class.active]="node.selected" (click)="select($event, node)">
+                                        <td><input type="checkbox" [(ngModel)]="node.selected" /></td>
+                                        <td>{{ i+1 }}</td>
+                                        <td>{{ node.Company }}</td>
+                                        <td>{{ node.FullName }}</td>
+                                        <td>{{ node.UserName }}</td>
+                                        <td>{{ node.Email }}</td>
+                                        <td>{{ node.PhoneNumber }}</td>
+                                        <td>{{ node.Remark }}</td>
+                                        <td>
+                                            <button class="btn btn-success btn-xs" title="审批通过" (click)="process($event, node, 1)">
+                                        <i class="glyphicon glyphicon-ok"></i>
+                                    </button>
+                                            <button class="btn btn-danger btn-xs" title="审批不通过" (click)="process($event, node, -1)">
+                                        <i class="glyphicon glyphicon-ban-circle"></i>
+                                    </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot class="hide">
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <div class="tab-pane fade" id="users">
+                            <table class="table table-condensed table-responsive">
+                                <thead>
+                                    <tr>
+                                        <th><input #AllUsers type="checkbox" (click)="toggle($event, AllUsers.checked, 1)" value="true" /></th>
+                                        <th>{{ 'item' | translate }}</th>
+                                        <th>{{ 'company name' | translate }}</th>
+                                        <th>{{ 'fullname' | translate }}</th>
+                                        <th>{{ 'login account' | translate }}</th>
+                                        <th>{{ 'email' | translate }}</th>
+                                        <th>{{ 'phonenumber' | translate }}</th>
+                                        <th>{{ 'department' | translate }}</th>
+                                        <th>{{ 'position' | translate }}</th>
+                                        <th></th>
+                                        <!--<th>{{ 'username' | translate }}</th>-->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let node of models | grep: 'Status':1; let i = index" [class.active]="node.selected" (click)="select($event, node)">
+                                        <td><input type="checkbox" [(ngModel)]="node.selected" /></td>
+                                        <td>{{ i+1 }}</td>
+                                        <td>{{ node.Company }}</td>
+                                        <td>{{ node.FullName }}</td>
+                                        <td>{{ node.UserName }}</td>
+                                        <td>{{ node.Email }}</td>
+                                        <td>{{ node.PhoneNumber }}</td>
+                                        <td>{{ node.Department }}</td>
+                                        <td>{{ node.Position }}</td>
+                                        <td>
+                                            <a class="btn btn-xs btn-primary" href="javascript:void(0);" (click)="edit($event, node)" title="{{ 'remark' | translate }}"><i class="glyphicon glyphicon-pencil"></i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot class="hide">
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <div class="tab-pane fade" id="formulas">
+                            <div class="row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-5">
+                                    <div class="form-group input-group">
+                                        <span class="input-group-addon">{{ 'from' | translate }}</span>
+                                        <select #source class="form-control">
+                                        <option *ngFor="let node of models| grep: 'Status':1; let i = index" value="{{ node.Id }}">{{ node.UserName }} | {{ node.Email }} | {{ node.FullName }}</option>
+                                    </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group input-group">
+                                        <span class="input-group-addon">{{ 'to' | translate }}</span>
+                                        <select #target class="form-control">
+                                        <option *ngFor="let node of models| grep: 'Status':1; let i = index" value="{{ node.Id }}">{{ node.UserName }} | {{ node.Email }} | {{ node.FullName }}</option>
+                                    </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-1"></div>
+                                <div class="col-md-4  text-center ">
+                                    <a class="btn btn-primary" href="javascript:void(0);" (click)="copy($event, source.value, target.value)">{{ 'copy' | translate }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+                <div class="panel-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="emodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" (click)='cancel($event, selected)'><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">{{ 'user info' | translate}}</h4>
+                </div>
+                <div class="modal-body">
+
+                    <form class="form-horizontal" role="form">
+                        <fieldset>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'user' | translate }}</label>
+
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" readonly [value]="selected.UserName" placeholder="{{ 'user' | translate }}">
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'fullname' | translate }}</label>
+
+                                <div class="col-md-9">
+                                    <input type="text" name="FullName" class="form-control" [(ngModel)]="selected.FullName" placeholder="{{ 'fullname' | translate}}">
+                                    <span [class.hide]="true" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'email' | translate }}</label>
+
+                                <div class="col-md-9">
+                                    <input type="email" class="form-control" readonly placeholder="{{ 'email' | translate }}" [value]="selected.Email">
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'phonenumber' | translate }}</label>
+
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" readonly [value]="selected.PhoneNumber" placeholder="{{ 'phonenumber' | translate}}">
+                                    <span [class.hide]="true" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'company' | translate }}</label>
+
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" readonly [value]="selected.Company" placeholder="{{ 'company' | translate}}">
+                                    <span [class.hide]="true" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'department' | translate }}</label>
+
+                                <div class="col-md-9">
+                                    <input type="text" name="Department" class="form-control" [(ngModel)]="selected.Department" placeholder="{{ 'department' | translate}}">
+                                    <span [class.hide]="true" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">{{ 'position' | translate }}</label>
+
+                                <div class="col-md-9">
+                                    <input type="text" name="Position" class="form-control" [(ngModel)]="selected.Position" placeholder="{{ 'position' | translate}}">
+                                    <span [class.hide]="true" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <!-- Change this to a button or input when using this as a form -->
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" (click)='cancel($event, selected)'>{{ 'close' | translate }}</button>
+                    <button type="button" class="btn btn-primary" (click)='save($event, selected)'>{{ 'save' | translate }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

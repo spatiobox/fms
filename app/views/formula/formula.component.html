@@ -1,0 +1,136 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i [class.hide]="loading" class="fa fa-list fa-fw"></i>
+        <i [class.hide]="!loading" class="fa fa-refresh fa-spin fa-fw"></i> {{ 'formular'| translate }}
+        <div class="pull-right" [hidden]="fale">
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline btn-warning btn-xs dropdown-toggle" data-toggle="dropdown">
+					<i class="fa fa-cog"></i>
+					<span class="caret"></span>
+				</button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                    <li><a href="javascript:void(0);" (click)="exporting = true;">{{ 'export formulars' | translate }}</a></li>
+                    <!--<li><a href="javascript:void(0);" (click)="export($event, 'xls')">{{ 'export formulars' | translate }}(EXCEL)</a></li>
+                    <li class="divider"></li>
+                    <li><a href="javascript:void(0);" (click)="download($event)">{{ 'download template' | translate }}</a></li>
+                    <li><a href="javascript:void(0);" (click)="import($event)">{{ 'import formulars' | translate }}</a></li>-->
+                </ul>
+            </div>
+            <!--<input type="file" [ng-file-select]="options" (onUpload)="upload($event)">-->
+        </div>
+        <!--<div class="pull-right">
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline btn-warning btn-xs dropdown-toggle" data-toggle="dropdown">
+                    <span>{{ pinOrg.Title }}</span>
+					<span class="caret"></span>
+				</button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                    <li *ngFor="let node of orgs"><a href="javascript:void(0);" (click)="selectOrganization($event, node)"><i *ngIf="node.ID == pinOrg.ID" class="fa fa-check"></i> {{ node.Title }}</a></li>
+                </ul>
+            </div>
+        </div>-->
+    </div>
+    <div class="panel-heading">
+
+        <div class="input-group">
+            <input id="btn-input" type="text" #fkey (keyup)="filter($event, fkey.value)" class="form-control input-sm" [placeholder]="'filter' | translate ">
+            <span class="input-group-btn">
+                    <button class="btn btn-warning btn-sm" id="btn-chat" (click)="filter($event, fkey.value)"><i class="glyphicon glyphicon-search"></i></button>
+                </span>
+        </div>
+
+    </div>
+    <!-- /.panel-heading -->
+    <div class="panel-body autoscroll" #scroller style="padding: 0px; max-height: 60vh; overflow-y: scroll;">
+        <table class="table table-condensed table-responsive">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>{{ 'name' | translate }}</th>
+                    <th>{{ 'code' | translate }}</th>
+                    <th style="width: 65px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let node of models | filter: key " [class.active]="selected.ID == node.ID">
+                    <td><input type="checkbox" (change)="node.isChecked = !node.isChecked;" /></td>
+                    <td [hidden]="node.status" (click)="select($event, node)">{{ node.Title }}</td>
+                    <td [hidden]="!node.status"><input type="text" class="col-md-12 text-editor" style="padding: 0px;" [(ngModel)]="node.title" /></td>
+                    <td [hidden]="node.status" (click)="select($event, node)">{{ node.Code }}</td>
+                    <td [hidden]="!node.status"><input type="text" class="col-md-12 text-editor" style="padding: 0px;" [(ngModel)]="node.code" /></td>
+                    <td>
+                        <button [class.hide]="node.status" class="btn btn-info btn-xs" (click)="edit($event, node)" title="{{ 'edit' | translate }}">
+                        <i class="glyphicon glyphicon-pencil"></i>
+                    </button>
+                        <button [class.hide]="!node.status" class="btn btn-info btn-xs" (click)="save($event, node)" title="{{ 'save' | translate }}">
+                        <i class="glyphicon glyphicon-floppy-disk"></i>
+                    </button>
+                        <button [class.hide]="!node.status" class="btn btn-danger btn-xs" (click)="cancel($event, node)" title="{{ 'cancel' | translate }}">
+                        <i class="glyphicon glyphicon-refresh"></i>
+                    </button>
+                        <button [class.hide]="node.status" class="btn btn-danger btn-xs" (click)="delete($event, node)" title="{{ 'delete' | translate }}">
+                        <i class="glyphicon glyphicon-trash"></i>
+                    </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- /.panel-body -->
+
+    <div class="panel-footer">
+        <button class="btn btn-primary btn-xs" (click)="add($event); scroller.scrollTop = 0;" title="{{ 'add' | translate }}">
+			<i class="glyphicon glyphicon-plus"></i>
+		</button>
+        <button class="btn btn-danger btn-xs" (click)="remove($event); scroller.scrollTop = 0;" title="{{ 'delete selected' | translate }}">
+			<i class="glyphicon glyphicon-trash"></i>
+		</button>
+        <!--<button [class.hide]="!selected || !!selected.status" class="btn btn-info btn-xs" (click)="edit()" title="{{ 'edit' | translate }}">-->
+        <!--<i class="glyphicon glyphicon-pencil"></i>-->
+        <!--</button>-->
+        <!--<button [class.hide]="!selected.status" class="btn btn-info btn-xs" (click)="save()" title="{{ 'save' | translate }}">-->
+        <!--<i class="glyphicon glyphicon-floppy-disk"></i>-->
+        <!--</button>-->
+        <!--<button [class.hide]="!selected.status" class="btn btn-danger btn-xs" (click)="cancel()" title="{{ 'cancel' | translate }}">-->
+        <!--<i class="glyphicon glyphicon-refresh"></i>-->
+        <!--</button>-->
+        <!--<button [class.hide]="!selected || !!selected.status" class="btn btn-danger btn-xs" (click)="delete()" title="{{ 'delete' | translate }}">-->
+        <!--<i class="glyphicon glyphicon-trash"></i>-->
+        <!--</button>-->
+        <!--<embed ng-src="{{content}}" style="width:200px;height:200px;"></embed>-->
+    </div>
+</div>
+<div [class.hide]='!loading' aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal fade in" style="display: block; padding-left: 0px; background-color: #000; opacity: 0.8;">
+    <div role="document" class="modal-dialog">
+        <div class="modal-content">
+            <img src="/assets/images/loading.gif" style="width: 100%;" />
+        </div>
+        <!-- /.modal-content -->
+    </div>
+</div>
+
+
+<div [class.hide]="!exporting" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal fade in" style="display: block; padding-left: 0px; background-color: #000;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)='exporting = false'><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">{{ 'select formulars' | translate }}</h4>
+            </div>
+            <div class="modal-body" style="overflow-y: auto; height: 50vh;">
+                <ul class="list-group">
+                    <li *ngFor="let node of models" class="list-group-item">
+                        <label><input type="checkbox" (change)='node._selected = !node._selected' [checked]="node._selected"> {{ node.Title }}</label>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" (click)="export($event, 'pdf')">{{ 'export' | translate }}PDF</button>
+                <button type="button" class="btn btn-primary" (click)="export($event, 'xls')">{{ 'export' | translate }}EXCEL</button>
+                <button type="button" class="btn btn-default" (click)='exporting = false' data-dismiss="modal">{{ 'close' | translate }}</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

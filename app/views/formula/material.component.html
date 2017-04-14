@@ -1,0 +1,89 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i [class.hide]="loading" class="fa fa-list fa-fw"></i>
+        <i [class.hide]="!loading" class="fa fa-refresh fa-spin fa-fw"></i> {{ 'material' | translate }}
+        <div class="pull-right" [hidden]="true">
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline btn-warning btn-xs dropdown-toggle" data-toggle="dropdown">
+                    <i class="fa fa-cog"></i>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                    <li><a href="javascript:void(0);" (click)="export($event, 'pdf')">{{ 'export materials' | translate }}(PDF)</a></li>
+                    <li><a href="javascript:void(0);" (click)="export($event, 'xls')">{{ 'export materials' | translate }}(EXCEL)</a></li>
+                    <li class="divider"></li>
+                    <li><a href="javascript:void(0);" (click)="download($event)">{{ 'download template' | translate }}</a></li>
+                    <li><a href="javascript:void(0);" (click)="import($event)">{{ 'import materials' | translate }}</a></li>
+                    <!--<li class="divider"></li>
+                    <li><a href="javascript:void(0);" (click)="deletes($event)">{{ 'delete choosen' | translate }}</a></li>-->
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="panel-heading">
+        <div class="input-group">
+            <input id="btn-input" type="text" #mkey (keyup)="filter($event, mkey.value)" class="form-control input-sm" [placeholder]="'filter' | translate">
+            <span class="input-group-btn">
+                    <button class="btn btn-warning btn-sm" id="btn-chat" (click)="filter($event, mkey.value)"><i class="glyphicon glyphicon-search"></i>
+                    </button>
+                </span>
+        </div>
+    </div>
+    <!-- /.panel-heading -->
+    <div class="panel-body autoscroll" #scroller style="padding: 0px; max-height: 60vh; overflow-y: scroll;">
+        <div id="morris-area-chart"></div>
+        <table class="table table-condensed table-responsive">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>{{ 'name' | translate }}</th>
+                    <th>{{ 'code' | translate }}</th>
+                    <th style="width: 65px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let node of models | filter: key; let i = index " (click)="select($event, node)" [class.active]="node.selected">
+                    <td><input type="checkbox" [checked]="node.selected" /></td>
+                    <td [hidden]="node.status">{{ node.Title }}</td>
+                    <td [hidden]="!node.status"><input type="text" class="col-md-12 text-editor" style="padding: 0px;" [(ngModel)]="node.title" /></td>
+                    <td [hidden]="node.status">{{ node.Code }}</td>
+                    <td [hidden]="!node.status"><input type="text" class="col-md-12 text-editor" style="padding: 0px;" [(ngModel)]="node.code" /></td>
+                    <td>
+                        <button [class.hide]="node.status" class="btn btn-info btn-xs" (click)="edit($event, node)" title="{{ 'edit' | translate }}">
+                        <i class="glyphicon glyphicon-pencil"></i>
+                    </button>
+                        <button [class.hide]="!node.status" class="btn btn-info btn-xs" (click)="save($event, node)" title="{{ 'save' | translate }}">
+                        <i class="glyphicon glyphicon-floppy-disk"></i>
+                    </button>
+                        <button [class.hide]="!node.status" class="btn btn-danger btn-xs" (click)="cancel($event, node)" title="{{ 'cancel' | translate }}">
+                        <i class="glyphicon glyphicon-refresh"></i>
+                    </button>
+                        <button [class.hide]="node.status" class="btn btn-danger btn-xs" (click)="delete($event, node)" title="{{ 'delete' | translate }}">
+                        <i class="glyphicon glyphicon-trash"></i>
+                    </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- /.panel-body -->
+    <div class="panel-footer">
+        <button class="btn btn-primary btn-xs" (click)="add($event); scroller.scrollTop = 0;" title="{{ 'add' | translate }}">
+            <i class="glyphicon glyphicon-plus"></i>
+        </button>
+        <button class="btn btn-outline btn-warning btn-xs pull-right" (click)="join($event)" title="{{ 'join' | translate }}">
+            <i class="glyphicon glyphicon-arrow-right"></i>
+        </button>
+        <button class="btn btn-danger btn-xs" (click)="deletes($event); scroller.scrollTop = 0;" title="{{ 'delete selected' | translate }}">
+			<i class="glyphicon glyphicon-trash"></i>
+		</button>
+    </div>
+</div>
+<div [class.hide]='!loading' aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal fade in" style="display: block; padding-left: 0px; background-color: #000; opacity: 0.8;">
+    <div role="document" class="modal-dialog">
+        <div class="modal-content">
+            <img src="/assets/images/loading.gif" style="width: 100%;" />
+        </div>
+        <!-- /.modal-content -->
+    </div>
+</div>

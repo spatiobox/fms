@@ -1,0 +1,58 @@
+<nav class="omni-navheader navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">{{ 'omniteaching' | translate }} OMS-F</a>
+    </div>
+    <!-- /.navbar-header -->
+
+    <ul class="nav navbar-top-links navbar-right">
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="{{ 'languages' | translate }}">
+                <i class="fa fa-globe fa-fw"></i> <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a (click)="chooseLanguage('zh-CN')"><i *ngIf="lang == 'zh-CN'" class="fa fa-check"></i>
+                        中文(简体)
+                    </a>
+                </li>
+                <!--<li class="divider"></li>-->
+                <li>
+                    <a (click)="chooseLanguage('zh-TW')"><i *ngIf="lang == 'zh-TW'" class="fa fa-check"></i>
+                        中文(正體)
+                    </a>
+                </li>
+                <!--<li class="divider"></li>-->
+                <li>
+                    <a (click)="chooseLanguage('en-US')"><i *ngIf="lang == 'en-US'" class="fa fa-check"></i>
+                        English
+                    </a>
+                </li>
+            </ul>
+            <!-- /.dropdown-messages -->
+        </li>
+        <!--  -->
+        <!-- /.dropdown -->
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                {{ name }}<i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-user">
+                <li><a [routerLink]="['/profile']"><i class="fa fa-user fa-fw"></i> {{ 'profile' | translate }}</a></li>
+                <!--<li><a href="#"><i class="fa fa-gear fa-fw"></i> {{ 'settings' | translate }}</a></li>-->
+                <li class="divider"></li>
+                <li><a (click)="signout($event)"><i class="fa fa-sign-out fa-fw"></i> {{ 'logout' | translate }}</a>
+                </li>
+            </ul>
+            <!-- /.dropdown-user -->
+        </li>
+        <!-- /.dropdown -->
+    </ul>
+    <!-- /.navbar-top-links -->
+
+</nav>
